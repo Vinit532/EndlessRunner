@@ -701,6 +701,7 @@ GameObject:
   - component: {fileID: 1226881881}
   - component: {fileID: 1226881880}
   - component: {fileID: 1226881879}
+  - component: {fileID: 1226881883}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Ground
@@ -795,6 +796,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1226881883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1226881878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1547a4946c9acbd4b9f2c98e5a4e4a4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 2023048359}
+  pathPrefabs:
+  - {fileID: 4178260125191824344, guid: 3d09604706c4f304bbb0f19e922dd63a, type: 3}
+  - {fileID: 3745975673524035715, guid: 83f5ede1fa7027142989d2339ec9cf11, type: 3}
+  initialSegments: 5
+  distanceToSpawnNext: 15
 --- !u!1 &1382915168
 GameObject:
   m_ObjectHideFlags: 0
@@ -1393,6 +1412,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerControllerAnimator: {fileID: 1782636976}
+  moveSpeed: 10
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

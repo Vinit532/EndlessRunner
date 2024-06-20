@@ -8,7 +8,7 @@ public class PlayerHandler : MonoBehaviour
 
     public Animator playerControllerAnimator;
 
-    float moveSpeed = 1f;
+   public float moveSpeed = 10f;
 
     float jumpForce = 8f;
     Rigidbody rb;
