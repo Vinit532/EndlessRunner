@@ -77,11 +77,12 @@ public class PlayerHandler : MonoBehaviour
         float newXPosition = Mathf.SmoothDamp(transform.position.x, targetXPosition, ref velocity, smoothTime);
         transform.position = new Vector3(newXPosition, transform.position.y, transform.position.z);
 
-
+        // Get local Y rotation
         float yRotation = NormalizeAngle(transform.localEulerAngles.y);
 
         // Print the Y-axis rotation value
-        Debug.Log("Y-axis rotation: " + ((int)yRotation));
+        Debug.Log("Y-axis rotation (normalized): " + ((int)yRotation));
+        Debug.Log("Y-axis rotation (raw): " + transform.localEulerAngles.y);
     }
 
     float NormalizeAngle(float angle)
@@ -90,6 +91,7 @@ public class PlayerHandler : MonoBehaviour
         while (angle < -180) angle += 360;
         return angle;
     }
+
     void MoveObject(Vector2 swipeDelta)
     {
         // Calculate horizontal movement based on swipe
@@ -101,6 +103,7 @@ public class PlayerHandler : MonoBehaviour
         // Set the target X position for smooth movement
         targetXPosition = newXPosition;
     }
+
     void DetectSwipe()
     {
         Vector2 swipeVector = currentTouchPosition - startTouchPosition;
@@ -141,6 +144,9 @@ public class PlayerHandler : MonoBehaviour
     void RotateObject(float angle)
     {
         transform.Rotate(0, angle, 0, Space.Self);
+
+        // Log rotation after rotation
+        Debug.Log("After rotation Y-axis: " + transform.localEulerAngles.y);
     }
 
     void MoveForward()
