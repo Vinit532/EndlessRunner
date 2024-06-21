@@ -35,6 +35,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Down arrow key pressed.");
             StartCoroutine(PlayAnimationAndReturnToRun("Slide"));
         }
+
     }
 
     public void Jump()
