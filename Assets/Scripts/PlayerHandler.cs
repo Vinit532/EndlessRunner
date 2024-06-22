@@ -9,26 +9,33 @@ public class PlayerHandler : MonoBehaviour
     private bool isGrounded;
     private bool isTouchingObject = false; // Track if the initial touch was on the swipeObject
     private Vector3 startPos; // Starting position of the player
+    private float targetZPosition; // Target Z position for smooth movement
     private float targetXPosition; // Target X position for smooth movement
 
     public float jumpForce = 8f;
     public Animator playerControllerAnimator;
     public float moveSpeed = 10f;
-    public float maxMoveDistance = 3f; // Max distance the player can move left or right on the X-axis
+    public float maxMoveDistance = 3f; // Max distance the player can move forward or backward on the Z-axis
     public GameObject swipeObject; // Reference to the game object to detect swipe on
     public float smoothTime = 0.1f; // Smoothing time for movement
     private float velocity = 0.0f; // Used for smooth damp movement
 
+    float yRotation; // to store value for changed rotation
     private void OnEnable()
     {
         rb = GetComponent<Rigidbody>();
         startPos = transform.position;
-        targetXPosition = startPos.x;
+        
     }
 
     void Update()
     {
         MoveForward();
+        yRotation = NormalizeAngle(transform.localEulerAngles.y);
+
+        // Print the Y-axis rotation value
+        Debug.Log("Y-axis rotation (normalized): " + yRotation);
+        Debug.Log("Y-axis rotation (raw): " + transform.localEulerAngles.y);
 
         if (Input.touchCount > 0)
         {
@@ -56,7 +63,16 @@ public class PlayerHandler : MonoBehaviour
             {
                 if (isTouchingObject)
                 {
-                    MoveObject(currentTouchPosition - startTouchPosition);
+                    //  MoveObjectOnX(currentTouchPosition - startTouchPosition);
+                    if (yRotation == 0 || yRotation == 180)
+                    {
+                        MoveObjectOnX(currentTouchPosition - startTouchPosition);
+                    }
+                    else
+                    {
+                        MoveObjectOnZ(currentTouchPosition - startTouchPosition);
+                    }
+                    
                     startTouchPosition = currentTouchPosition; // Update the start position for the next frame
                 }
             }
@@ -73,16 +89,11 @@ public class PlayerHandler : MonoBehaviour
             }
         }
 
-        // Smoothly move towards the target X position
-        float newXPosition = Mathf.SmoothDamp(transform.position.x, targetXPosition, ref velocity, smoothTime);
-        transform.position = new Vector3(newXPosition, transform.position.y, transform.position.z);
+        // Smoothly move towards the target Z position
+       
 
         // Get local Y rotation
-        float yRotation = NormalizeAngle(transform.localEulerAngles.y);
-
-        // Print the Y-axis rotation value
-        Debug.Log("Y-axis rotation (normalized): " + ((int)yRotation));
-        Debug.Log("Y-axis rotation (raw): " + transform.localEulerAngles.y);
+        
     }
 
     float NormalizeAngle(float angle)
@@ -92,16 +103,50 @@ public class PlayerHandler : MonoBehaviour
         return angle;
     }
 
-    void MoveObject(Vector2 swipeDelta)
+    void MoveObjectOnZ(Vector2 swipeDelta)
     {
-        // Calculate horizontal movement based on swipe
-        float xSwipe = swipeDelta.x * 0.01f; // Adjust sensitivity for smoother control
-
+        targetZPosition = startPos.z;
+        // Calculate vertical movement based on swipe
+        
+        float zSwipe ; // Adjust sensitivity for smoother control
+        if (yRotation < 92)
+        {
+            zSwipe = swipeDelta.x * - 0.01f; // Adjust sensitivity for smoother control
+        }
+        else
+        {
+            zSwipe = swipeDelta.x * 0.01f;
+        }
         // Calculate new position within bounds
-        float newXPosition = Mathf.Clamp(transform.position.x + xSwipe, startPos.x - maxMoveDistance, startPos.x + maxMoveDistance);
+        float newZPosition = Mathf.Clamp(transform.position.z + zSwipe, startPos.z - maxMoveDistance, startPos.z + maxMoveDistance);
+
+        // Set the target Z position for smooth movement
+        targetZPosition = newZPosition;
+
+        newZPosition = Mathf.SmoothDamp(transform.position.z, targetZPosition, ref velocity, smoothTime);
+        transform.position = new Vector3(transform.position.x, transform.position.y, newZPosition);
+    }
+    void MoveObjectOnX(Vector2 swipeDelta)
+    {
+        targetXPosition = startPos.x;
+        // Calculate vertical movement based on swipe
+        float xSwipe = swipeDelta.x * 0.01f; // Adjust sensitivity for smoother control
+        if (yRotation < 2)
+        {
+            xSwipe = swipeDelta.x * 0.01f;
+        }
+        else
+        {
+            xSwipe = swipeDelta.x * - 0.01f;
+        }
+        // Calculate new position within bounds
+        float newZPosition = Mathf.Clamp(transform.position.x + xSwipe, startPos.x - maxMoveDistance, startPos.x + maxMoveDistance);
 
         // Set the target X position for smooth movement
-        targetXPosition = newXPosition;
+        targetXPosition = newZPosition;
+
+        newZPosition = Mathf.SmoothDamp(transform.position.x, targetXPosition, ref velocity, smoothTime);
+        transform.position = new Vector3(newZPosition, transform.position.y, transform.position.z);
     }
 
     void DetectSwipe()
