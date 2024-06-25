@@ -205,6 +205,7 @@ public class PlayerHandler : MonoBehaviour
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
+        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
     }
 
     // Check if the object is grounded
