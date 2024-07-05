@@ -63,8 +63,8 @@ public class PlayerHandler : MonoBehaviour
             {
                 if (isTouchingObject)
                 {
-                    //  MoveObjectOnX(currentTouchPosition - startTouchPosition);
-                    if (yRotation == 0 || yRotation == 180)
+                     // MoveObjectOnX(currentTouchPosition - startTouchPosition);
+                    if ((yRotation >= -40 || yRotation <= 45) || (yRotation >= 120 || yRotation <= 220))
                     {
                         MoveObjectOnX(currentTouchPosition - startTouchPosition);
                     }

@@ -3,83 +3,94 @@ using System.Collections.Generic;
 
 public class PathHandler : MonoBehaviour
 {
-    public GameObject player;                     // Reference to the player object
-    public List<GameObject> pathPrefabs;          // List of different path segment prefabs
-    public int initialSegments = 5;               // Number of segments to start with
-    public float distanceToSpawnNext = 15f;       // Distance from the last segment to spawn the next one
+    public List<GameObject> prefabs; // List of prefabs to instantiate
+    public Transform parentTransform; // Parent transform for organization
 
-    private Queue<GameObject> activePaths;        // Queue to keep track of active path segments
-    private GameObject lastSegment;               // Reference to the last path segment
-    private float playerLastZPosition;            // The Z position of the player at the last check
+    private GameObject lastInstantiatedPrefab; // Reference to the last instantiated prefab
 
     void Start()
     {
-        activePaths = new Queue<GameObject>();
+        if (prefabs.Count == 0) return;
 
-        // Instantiate initial path segments
-        for (int i = 0; i < initialSegments; i++)
+        // Instantiate the first prefab
+        lastInstantiatedPrefab = Instantiate(prefabs[0], parentTransform);
+        lastInstantiatedPrefab.transform.SetParent(parentTransform);
+
+        for (int i = 1; i < prefabs.Count; i++)
         {
-            SpawnNextPathSegment();
-        }
-
-        playerLastZPosition = player.transform.position.z;
-    }
-
-    void Update()
-    {
-        // Check if the player has moved enough to warrant spawning a new segment
-        if (player.transform.position.z - playerLastZPosition >= distanceToSpawnNext)
-        {
-            playerLastZPosition = player.transform.position.z;
-            SpawnNextPathSegment();
-            RemoveOldPathSegment();
+            InstantiateAndAlignNextPrefab(prefabs[i]);
         }
     }
 
-    // Function to spawn the next path segment
-    void SpawnNextPathSegment()
+    void InstantiateAndAlignNextPrefab(GameObject prefab)
     {
-        int randomIndex = Random.Range(0, pathPrefabs.Count);
-        GameObject newSegment;
+        // Get the last child of the last instantiated prefab
+        Transform lastChild = GetLastChild(lastInstantiatedPrefab);
 
-        if (lastSegment != null)
-        {
-            Transform lastChildEndPoint = GetLastChildEndPoint(lastSegment.transform);
-            newSegment = Instantiate(pathPrefabs[randomIndex], lastChildEndPoint.position, lastChildEndPoint.rotation);
-        }
-        else
-        {
-            // For the first segment, use the default position
-            newSegment = Instantiate(pathPrefabs[randomIndex], Vector3.zero, Quaternion.identity);
-        }
+        // Get the first child of the new prefab
+        GameObject newPrefabInstance = Instantiate(prefab);
+        Transform firstChild = GetFirstChild(newPrefabInstance);
 
-        activePaths.Enqueue(newSegment);
-        lastSegment = newSegment;
+        // Align the new prefab
+        AlignPrefabs(lastChild, firstChild, newPrefabInstance);
+
+        // Set the parent for organization
+        newPrefabInstance.transform.SetParent(parentTransform);
+
+        // Update the last instantiated prefab
+        lastInstantiatedPrefab = newPrefabInstance;
     }
 
-    // Function to remove the oldest path segment
-    void RemoveOldPathSegment()
+    Transform GetLastChild(GameObject prefab)
     {
-        if (activePaths.Count > 0)
-        {
-            GameObject oldSegment = activePaths.Dequeue();
-            Destroy(oldSegment);
-        }
+        return prefab.transform.GetChild(prefab.transform.childCount - 1);
     }
 
-    // Function to find the end point of the last child of the given segment
-    Transform GetLastChildEndPoint(Transform segment)
+    Transform GetFirstChild(GameObject prefab)
     {
-        Transform lastChild = segment.GetChild(segment.childCount - 1);
-        Transform endPoint = lastChild.Find("EndPoint");
+        return prefab.transform.GetChild(0);
+    }
 
-        if (endPoint == null)
+    void AlignPrefabs(Transform lastChild, Transform firstChild, GameObject newPrefabInstance)
+    {
+        // Get the mesh of the last and first child
+        MeshFilter lastMeshFilter = lastChild.GetComponent<MeshFilter>();
+        MeshFilter firstMeshFilter = firstChild.GetComponent<MeshFilter>();
+
+        if (lastMeshFilter == null || firstMeshFilter == null)
         {
-            Debug.LogError("EndPoint not found on last child of the path segment!");
-            // Default to the position and rotation of the last child if no EndPoint is found
-            endPoint = lastChild;
+            Debug.LogError("Child objects must have MeshFilter components.");
+            return;
         }
 
-        return endPoint;
+        Mesh lastMesh = lastMeshFilter.mesh;
+        Mesh firstMesh = firstMeshFilter.mesh;
+
+        // Get vertices in world space
+        Vector3[] lastChildVertices = GetWorldSpaceVertices(lastChild, lastMesh);
+        Vector3[] firstChildVertices = GetWorldSpaceVertices(firstChild, firstMesh);
+
+        // Assuming we align the first vertex of last child to the first vertex of first child
+        Vector3 lastVertex = lastChildVertices[0]; // You can choose which vertex to use
+        Vector3 firstVertex = firstChildVertices[0]; // You can choose which vertex to use
+
+        // Calculate offset
+        Vector3 offset = lastVertex - firstVertex;
+
+        // Apply the offset to the new prefab
+        newPrefabInstance.transform.position += offset;
+    }
+
+    Vector3[] GetWorldSpaceVertices(Transform objTransform, Mesh mesh)
+    {
+        Vector3[] worldSpaceVertices = new Vector3[mesh.vertexCount];
+        Vector3[] localVertices = mesh.vertices;
+
+        for (int i = 0; i < localVertices.Length; i++)
+        {
+            worldSpaceVertices[i] = objTransform.TransformPoint(localVertices[i]);
+        }
+
+        return worldSpaceVertices;
     }
 }

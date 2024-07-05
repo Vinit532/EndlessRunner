@@ -77,13 +77,13 @@ Material:
     - _DstBlend: 10
     - _Glossiness: 0.289
     - _Mode: 2
-    - _Power: 3.22
-    - _Shift: 0.27
+    - _Power: 2.24
+    - _Shift: 0.81
     - _SrcBlend: 5
     - _ZWrite: 0
     - _layer1BreakupAmnt: 0.89
-    - _layer1Metal: 0.7
-    - _layer1Tiling: -0.21
+    - _layer1Metal: 0.8
+    - _layer1Tiling: -0.15
     m_Colors:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
