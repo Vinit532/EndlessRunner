@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-     Animator animator;
+    public Animator animator;
 
     void Start()
     {
@@ -61,7 +61,7 @@ public class PlayerController : MonoBehaviour
 
             yield return new WaitForSeconds(animationLength);
             animator.ResetTrigger(triggerName);
-            animator.SetTrigger("Run");
+           // animator.SetTrigger("Run");
             Debug.Log("Returning to RunningForward animation.");
         }
         else
@@ -82,7 +82,7 @@ public class PlayerController : MonoBehaviour
 
             yield return new WaitForSeconds(animationLength);
             playerAnimator.ResetTrigger("Jump");
-            playerAnimator.SetTrigger("Run");
+           // playerAnimator.SetTrigger("Run");
             Debug.Log("Returning to RunningForward animation.");
         }
         else
@@ -112,6 +112,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
+   
 }
 

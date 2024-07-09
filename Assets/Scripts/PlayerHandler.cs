@@ -175,12 +175,13 @@ public class PlayerHandler : MonoBehaviour
                 // Vertical swipe
                 if (ySwipe > 0)
                 {
+                    playerControllerAnimator.ResetTrigger("Run");
                     Jump();
-                    StartCoroutine(playerController.jumpPlayer(playerControllerAnimator)); // Swipe up
+                    
                 }
                 else
                 {
-                    StartCoroutine(playerController.slidePlayer(playerControllerAnimator)); // Swipe down
+                    StartCoroutine(playerController.slidePlayer(playerControllerAnimator)); 
                 }
             }
         }
@@ -203,9 +204,9 @@ public class PlayerHandler : MonoBehaviour
     {
         if (isGrounded)
         {
+            StartCoroutine(playerController.jumpPlayer(playerControllerAnimator));
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
-        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
     }
 
     // Check if the object is grounded
@@ -214,7 +215,11 @@ public class PlayerHandler : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
+           // playerControllerAnimator.ResetTrigger("Jump");
+            playerControllerAnimator.SetTrigger("Run");
+            Debug.Log("Player collied to ground");
         }
+
     }
 
     // Check if the object leaves the ground
@@ -225,4 +230,5 @@ public class PlayerHandler : MonoBehaviour
             isGrounded = false;
         }
     }
+
 }
