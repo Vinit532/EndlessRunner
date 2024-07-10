@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class PlayerHandler : MonoBehaviour
@@ -21,6 +22,9 @@ public class PlayerHandler : MonoBehaviour
     private float velocity = 0.0f; // Used for smooth damp movement
 
     float yRotation; // to store value for changed rotation
+
+    float rotationSpeed = 450f;
+    bool isRotating = false;
     private void OnEnable()
     {
         rb = GetComponent<Rigidbody>();
@@ -163,11 +167,11 @@ public class PlayerHandler : MonoBehaviour
                 // Horizontal swipe
                 if (xSwipe > 0)
                 {
-                    RotateObject(90); // Swipe right
+                    StartCoroutine(RotateObject(90));  // Swipe right
                 }
                 else
                 {
-                    RotateObject(-90); // Swipe left
+                   StartCoroutine( RotateObject(-90)); // Swipe left
                 }
             }
             else
@@ -186,13 +190,30 @@ public class PlayerHandler : MonoBehaviour
             }
         }
     }
-
-    void RotateObject(float angle)
+    
+    IEnumerator RotateObject(float angle)
     {
-        transform.Rotate(0, angle, 0, Space.Self);
+        isRotating = true;
+
+        float targetAngle = transform.localEulerAngles.y + angle;
+        float startAngle = transform.localEulerAngles.y;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < Mathf.Abs(angle) / rotationSpeed)
+        {
+            float currentAngle = Mathf.Lerp(startAngle, targetAngle, elapsedTime * rotationSpeed / Mathf.Abs(angle));
+            transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, currentAngle, transform.localEulerAngles.z);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure final angle is set to target angle
+        transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, targetAngle, transform.localEulerAngles.z);
 
         // Log rotation after rotation
         Debug.Log("After rotation Y-axis: " + transform.localEulerAngles.y);
+
+        isRotating = false;
     }
 
     void MoveForward()
