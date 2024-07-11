@@ -5,7 +5,9 @@ public class PathHandler : MonoBehaviour
 {
     public List<GameObject> prefabs; // List of prefabs to instantiate
     public Transform parentTransform; // Parent transform for organization
+    public GameObject player; // Reference to the player object
 
+    private List<GameObject> instantiatedPrefabs = new List<GameObject>(); // List to keep track of instantiated prefabs
     private GameObject lastInstantiatedPrefab; // Reference to the last instantiated prefab
 
     void Start()
@@ -15,11 +17,47 @@ public class PathHandler : MonoBehaviour
         // Instantiate the first prefab
         lastInstantiatedPrefab = Instantiate(prefabs[0], parentTransform);
         lastInstantiatedPrefab.transform.SetParent(parentTransform);
+        instantiatedPrefabs.Add(lastInstantiatedPrefab);
 
         for (int i = 1; i < prefabs.Count; i++)
         {
             InstantiateAndAlignNextPrefab(prefabs[i]);
         }
+    }
+
+    void Update()
+    {
+        // Check if player has moved to the next prefab
+        if (PlayerMovedToNextPrefab())
+        {
+            // Destroy the first prefab and re-instantiate it at the end
+            GameObject firstPrefab = instantiatedPrefabs[0];
+            instantiatedPrefabs.RemoveAt(0);
+            Destroy(firstPrefab);
+
+            GameObject newPrefabInstance = Instantiate(firstPrefab, parentTransform);
+            newPrefabInstance.transform.SetParent(parentTransform);
+            instantiatedPrefabs.Add(newPrefabInstance);
+
+            // Align the new prefab
+            Transform lastChild = GetLastChild(lastInstantiatedPrefab);
+            Transform firstChild = GetFirstChild(newPrefabInstance);
+            AlignPrefabs(lastChild, firstChild, newPrefabInstance);
+
+            lastInstantiatedPrefab = newPrefabInstance;
+        }
+    }
+
+    bool PlayerMovedToNextPrefab()
+    {
+        // Determine if the player has moved to the next prefab
+        if (instantiatedPrefabs.Count < 2) return false;
+
+        // Example: Check if player has moved past the midpoint of the current prefab
+        float playerPositionZ = player.transform.position.z;
+        float currentPrefabEndZ = instantiatedPrefabs[1].transform.position.z;
+
+        return playerPositionZ > currentPrefabEndZ;
     }
 
     void InstantiateAndAlignNextPrefab(GameObject prefab)
@@ -39,6 +77,9 @@ public class PathHandler : MonoBehaviour
 
         // Update the last instantiated prefab
         lastInstantiatedPrefab = newPrefabInstance;
+
+        // Add to the list of instantiated prefabs
+        instantiatedPrefabs.Add(newPrefabInstance);
     }
 
     Transform GetLastChild(GameObject prefab)
