@@ -229,7 +229,7 @@ public class PlayerHandler : MonoBehaviour
             StartCoroutine(playerController.jumpPlayer(playerControllerAnimator));
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
-        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        isGrounded = false;
     }
 
     // Check if the object is grounded
@@ -250,7 +250,7 @@ public class PlayerHandler : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
-            isGrounded = false;
+            
             Debug.Log("Player Out of ground");
         }
     }
