@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void Update()
+   /* void Update()
     {
         // Check if the space key is pressed for jumping
         if (Input.GetKeyDown(KeyCode.Space))
@@ -69,21 +69,18 @@ public class PlayerController : MonoBehaviour
             Debug.LogError("Animator component is missing or not set!");
         }
     }
-
+    */
     public IEnumerator jumpPlayer(Animator playerAnimator)
     {
         if (playerAnimator != null)
         {
             playerAnimator.SetTrigger("Jump");
-            Debug.Log($"{"Jump"} animation triggered.");
 
             float animationLength = playerAnimator.GetCurrentAnimatorStateInfo(0).length;
-            Debug.Log($"{"Jump"} animation length: {animationLength}");
-
+            
             yield return new WaitForSeconds(animationLength);
             playerAnimator.ResetTrigger("Jump");
            // playerAnimator.SetTrigger("Run");
-            Debug.Log("Returning to RunningForward animation.");
         }
         else
         {
@@ -96,15 +93,12 @@ public class PlayerController : MonoBehaviour
         if (playerAnimator != null)
         {
             playerAnimator.SetTrigger("Slide");
-            Debug.Log($"{"Slide"} animation triggered.");
-
+            
             float animationLength = playerAnimator.GetCurrentAnimatorStateInfo(0).length;
-            Debug.Log($"{"Slide"} animation length: {animationLength}");
-
+           
             yield return new WaitForSeconds(animationLength);
             playerAnimator.ResetTrigger("Slide");
             playerAnimator.SetTrigger("Run");
-            Debug.Log("Returning to RunningForward animation.");
         }
         else
         {

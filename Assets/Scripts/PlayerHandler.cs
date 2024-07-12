@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class PlayerHandler : MonoBehaviour
 {
@@ -25,11 +26,15 @@ public class PlayerHandler : MonoBehaviour
 
     float rotationSpeed = 450f;
     bool isRotating = false;
+
+    public AudioSource gamePlayAudioSource;
+    public List<AudioClip> audioClips;
+    public delegate void AudioSourceAction(); // To take action as parameter while calling methods to play Audio 
     private void OnEnable()
     {
         rb = GetComponent<Rigidbody>();
         startPos = transform.position;
-        
+        GamePlaySound(gamePlayAudioSource.Play);
     }
 
     void Update()
@@ -37,9 +42,6 @@ public class PlayerHandler : MonoBehaviour
         MoveForward();
         yRotation = NormalizeAngle(transform.localEulerAngles.y);
 
-        // Print the Y-axis rotation value
-        Debug.Log("Y-axis rotation (normalized): " + yRotation);
-        Debug.Log("Y-axis rotation (raw): " + transform.localEulerAngles.y);
 
         if (Input.touchCount > 0)
         {
@@ -179,7 +181,6 @@ public class PlayerHandler : MonoBehaviour
                 // Vertical swipe
                 if (ySwipe > 0)
                 {
-                    Debug.Log("Player Jumping");
                     playerControllerAnimator.ResetTrigger("Run");
                     Jump();
                     
@@ -226,21 +227,53 @@ public class PlayerHandler : MonoBehaviour
     {
         if (isGrounded)
         {
+            GamePlaySound(gamePlayAudioSource.Stop);
+            PlayJumpSound(gamePlayAudioSource.Play);
             StartCoroutine(playerController.jumpPlayer(playerControllerAnimator));
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
         isGrounded = false;
     }
 
+    void GamePlaySound(AudioSourceAction action)
+    {
+        gamePlayAudioSource.clip = audioClips[0];
+        gamePlayAudioSource.loop = true;
+        action.Invoke();
+    }
+    void PlayJumpSound(AudioSourceAction action)
+    {
+        gamePlayAudioSource.clip = audioClips[1];
+        gamePlayAudioSource.loop = false;
+        action.Invoke();
+    }
+    void PlayFallsIntoWaterSound(AudioSourceAction action)
+    {
+        gamePlayAudioSource.clip = audioClips[2];
+        gamePlayAudioSource.loop = false;
+        action.Invoke();
+    }
     // Check if the object is grounded
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
-           // playerControllerAnimator.ResetTrigger("Jump");
             playerControllerAnimator.SetTrigger("Run");
+            if (!gamePlayAudioSource.isPlaying)
+            {
+                GamePlaySound(gamePlayAudioSource.Play);
+            }
             Debug.Log("Player collied to ground");
+        }
+
+        if (collision.gameObject.CompareTag("Water"))
+        {
+            Debug.Log("Player Falls Into the Water");
+            isGrounded = false;
+            GamePlaySound(gamePlayAudioSource.Stop);
+            PlayFallsIntoWaterSound(gamePlayAudioSource.Play);
+            
         }
 
     }
