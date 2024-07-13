@@ -10,7 +10,6 @@ public class PlayerHandler : MonoBehaviour
     private Rigidbody rb;
     private bool isGrounded;
     private bool isTouchingObject = false; // Track if the initial touch was on the swipeObject
-    private Vector3 startPos; // Starting position of the player
     private float targetZPosition; // Target Z position for smooth movement
     private float targetXPosition; // Target X position for smooth movement
 
@@ -20,7 +19,8 @@ public class PlayerHandler : MonoBehaviour
     public float maxMoveDistance = 3f; // Max distance the player can move forward or backward on the Z-axis
     public GameObject swipeObject; // Reference to the game object to detect swipe on
     public float smoothTime = 0.1f; // Smoothing time for movement
-    private float velocity = 0.0f; // Used for smooth damp movement
+    private float velocityX = 0.0f; // Used for smooth damp movement on X-axis
+    private float velocityZ = 0.0f; // Used for smooth damp movement on Z-axis
 
     float yRotation; // to store value for changed rotation
 
@@ -33,7 +33,6 @@ public class PlayerHandler : MonoBehaviour
     private void OnEnable()
     {
         rb = GetComponent<Rigidbody>();
-        startPos = transform.position;
         GamePlaySound(gamePlayAudioSource.Play);
     }
 
@@ -41,7 +40,6 @@ public class PlayerHandler : MonoBehaviour
     {
         MoveForward();
         yRotation = NormalizeAngle(transform.localEulerAngles.y);
-
 
         if (Input.touchCount > 0)
         {
@@ -69,8 +67,7 @@ public class PlayerHandler : MonoBehaviour
             {
                 if (isTouchingObject)
                 {
-                     // MoveObjectOnX(currentTouchPosition - startTouchPosition);
-                    if (transform.localEulerAngles.y <= 80 || (transform.localEulerAngles.y >= 150 && transform.localEulerAngles.y <= 200)) //(yRotation >= -40 || yRotation <= 45) || (yRotation >= 120 || yRotation <= 220)
+                    if (transform.localEulerAngles.y <= 80 || (transform.localEulerAngles.y >= 150 && transform.localEulerAngles.y <= 200))
                     {
                         MoveObjectOnX(currentTouchPosition - startTouchPosition);
                     }
@@ -78,9 +75,9 @@ public class PlayerHandler : MonoBehaviour
                     {
                         MoveObjectOnZ(currentTouchPosition - startTouchPosition);
                     }
-                    
+
                     startTouchPosition = currentTouchPosition; // Update the start position for the next frame
-                } 
+                }
             }
             else if (touch.phase == TouchPhase.Ended)
             {
@@ -94,12 +91,6 @@ public class PlayerHandler : MonoBehaviour
                 }
             }
         }
-
-        // Smoothly move towards the target Z position
-       
-
-        // Get local Y rotation
-        
     }
 
     float NormalizeAngle(float angle)
@@ -111,31 +102,29 @@ public class PlayerHandler : MonoBehaviour
 
     void MoveObjectOnZ(Vector2 swipeDelta)
     {
-        targetZPosition = startPos.z;
         // Calculate vertical movement based on swipe
-        
-        float zSwipe ; // Adjust sensitivity for smoother control
+        float zSwipe; // Adjust sensitivity for smoother control
         if (transform.localEulerAngles.y < 150)
         {
-            zSwipe = swipeDelta.x * - 0.01f; // Adjust sensitivity for smoother control
+            zSwipe = swipeDelta.x * -0.01f; // Adjust sensitivity for smoother control
         }
         else
         {
             zSwipe = swipeDelta.x * 0.01f;
         }
         // Calculate new position within bounds
-        float newZPosition = Mathf.Clamp(transform.position.z + zSwipe, startPos.z - maxMoveDistance, startPos.z + maxMoveDistance);
+        float newZPosition = Mathf.Clamp(transform.position.z + zSwipe, transform.position.z - maxMoveDistance, transform.position.z + maxMoveDistance);
 
         // Set the target Z position for smooth movement
         targetZPosition = newZPosition;
 
-        newZPosition = Mathf.SmoothDamp(transform.position.z, targetZPosition, ref velocity, smoothTime);
+        newZPosition = Mathf.SmoothDamp(transform.position.z, targetZPosition, ref velocityZ, smoothTime);
         transform.position = new Vector3(transform.position.x, transform.position.y, newZPosition);
     }
+
     void MoveObjectOnX(Vector2 swipeDelta)
     {
-        targetXPosition = startPos.x;
-        // Calculate vertical movement based on swipe
+        // Calculate horizontal movement based on swipe
         float xSwipe = swipeDelta.x * 0.01f; // Adjust sensitivity for smoother control
         if (transform.localEulerAngles.y < 80)
         {
@@ -143,16 +132,16 @@ public class PlayerHandler : MonoBehaviour
         }
         else
         {
-            xSwipe = swipeDelta.x * - 0.01f;
+            xSwipe = swipeDelta.x * -0.01f;
         }
         // Calculate new position within bounds
-        float newZPosition = Mathf.Clamp(transform.position.x + xSwipe, startPos.x - maxMoveDistance, startPos.x + maxMoveDistance);
+        float newXPosition = Mathf.Clamp(transform.position.x + xSwipe, transform.position.x - maxMoveDistance, transform.position.x + maxMoveDistance);
 
         // Set the target X position for smooth movement
-        targetXPosition = newZPosition;
+        targetXPosition = newXPosition;
 
-        newZPosition = Mathf.SmoothDamp(transform.position.x, targetXPosition, ref velocity, smoothTime);
-        transform.position = new Vector3(newZPosition, transform.position.y, transform.position.z);
+        newXPosition = Mathf.SmoothDamp(transform.position.x, targetXPosition, ref velocityX, smoothTime);
+        transform.position = new Vector3(newXPosition, transform.position.y, transform.position.z);
     }
 
     void DetectSwipe()
@@ -173,7 +162,7 @@ public class PlayerHandler : MonoBehaviour
                 }
                 else
                 {
-                   StartCoroutine( RotateObject(-90)); // Swipe left
+                    StartCoroutine(RotateObject(-90)); // Swipe left
                 }
             }
             else
@@ -183,16 +172,16 @@ public class PlayerHandler : MonoBehaviour
                 {
                     playerControllerAnimator.ResetTrigger("Run");
                     Jump();
-                    
+
                 }
                 else
                 {
-                    StartCoroutine(playerController.slidePlayer(playerControllerAnimator)); 
+                    StartCoroutine(playerController.slidePlayer(playerControllerAnimator));
                 }
             }
         }
     }
-    
+
     IEnumerator RotateObject(float angle)
     {
         isRotating = true;
@@ -273,7 +262,7 @@ public class PlayerHandler : MonoBehaviour
             isGrounded = false;
             GamePlaySound(gamePlayAudioSource.Stop);
             PlayFallsIntoWaterSound(gamePlayAudioSource.Play);
-            
+
         }
 
     }
@@ -283,7 +272,7 @@ public class PlayerHandler : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
-            
+
             Debug.Log("Player Out of ground");
         }
     }
