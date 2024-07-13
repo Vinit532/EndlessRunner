@@ -70,7 +70,7 @@ public class PlayerHandler : MonoBehaviour
                 if (isTouchingObject)
                 {
                      // MoveObjectOnX(currentTouchPosition - startTouchPosition);
-                    if ((yRotation >= -40 || yRotation <= 45) || (yRotation >= 120 || yRotation <= 220))
+                    if (transform.localEulerAngles.y <= 80 || (transform.localEulerAngles.y >= 150 && transform.localEulerAngles.y <= 200)) //(yRotation >= -40 || yRotation <= 45) || (yRotation >= 120 || yRotation <= 220)
                     {
                         MoveObjectOnX(currentTouchPosition - startTouchPosition);
                     }
@@ -80,7 +80,7 @@ public class PlayerHandler : MonoBehaviour
                     }
                     
                     startTouchPosition = currentTouchPosition; // Update the start position for the next frame
-                }
+                } 
             }
             else if (touch.phase == TouchPhase.Ended)
             {
@@ -115,7 +115,7 @@ public class PlayerHandler : MonoBehaviour
         // Calculate vertical movement based on swipe
         
         float zSwipe ; // Adjust sensitivity for smoother control
-        if (yRotation < 92)
+        if (transform.localEulerAngles.y < 150)
         {
             zSwipe = swipeDelta.x * - 0.01f; // Adjust sensitivity for smoother control
         }
@@ -137,7 +137,7 @@ public class PlayerHandler : MonoBehaviour
         targetXPosition = startPos.x;
         // Calculate vertical movement based on swipe
         float xSwipe = swipeDelta.x * 0.01f; // Adjust sensitivity for smoother control
-        if (yRotation < 2)
+        if (transform.localEulerAngles.y < 80)
         {
             xSwipe = swipeDelta.x * 0.01f;
         }
