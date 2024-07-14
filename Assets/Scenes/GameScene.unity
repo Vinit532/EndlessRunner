@@ -1058,10 +1058,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.3
-  m_Height: 1.9
+  m_Radius: 0.4
+  m_Height: 1.9197004
   m_Direction: 1
-  m_Center: {x: 0, y: 0.98, z: 0}
+  m_Center: {x: 0, y: 0.9701499, z: 0}
 --- !u!114 &933339679
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1814,7 +1814,7 @@ MonoBehaviour:
   moveSpeed: 15
   maxMoveDistance: 3
   swipeObject: {fileID: 933339676}
-  smoothTime: 0.1
+  smoothTime: 0.005
   gamePlayAudioSource: {fileID: 2023048364}
   audioClips:
   - {fileID: 8300000, guid: 61e57b03bf5016b41b90b2d54a8d2d03, type: 3}
