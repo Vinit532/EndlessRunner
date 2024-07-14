@@ -20,56 +20,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-   /* void Update()
-    {
-        // Check if the space key is pressed for jumping
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Debug.Log("Space key pressed.");
-            StartCoroutine(PlayAnimationAndReturnToRun("Jump"));
-        }
-
-        // Check if the down arrow key is pressed for sliding
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            Debug.Log("Down arrow key pressed.");
-            StartCoroutine(PlayAnimationAndReturnToRun("Slide"));
-        }
-
-    }
-
-    public void Jump()
-    {
-        Debug.Log("Jump Called");
-        StartCoroutine(PlayAnimationAndReturnToRun("Jump"));
-    }
-    public void Slide()
-    {
-        Debug.Log("Slide Called");
-        StartCoroutine(PlayAnimationAndReturnToRun("Slide"));
-    }
-    public IEnumerator PlayAnimationAndReturnToRun(string triggerName)
-    {
-        Debug.Log("PlayAnimationAndReturnToRun Called");
-        if (animator != null)
-        {
-            animator.SetTrigger(triggerName);
-            Debug.Log($"{triggerName} animation triggered.");
-
-            float animationLength = animator.GetCurrentAnimatorStateInfo(0).length;
-            Debug.Log($"{triggerName} animation length: {animationLength}");
-
-            yield return new WaitForSeconds(animationLength);
-            animator.ResetTrigger(triggerName);
-           // animator.SetTrigger("Run");
-            Debug.Log("Returning to RunningForward animation.");
-        }
-        else
-        {
-            Debug.LogError("Animator component is missing or not set!");
-        }
-    }
-    */
     public IEnumerator jumpPlayer(Animator playerAnimator)
     {
         if (playerAnimator != null)
@@ -80,7 +30,6 @@ public class PlayerController : MonoBehaviour
             
             yield return new WaitForSeconds(animationLength);
             playerAnimator.ResetTrigger("Jump");
-           // playerAnimator.SetTrigger("Run");
         }
         else
         {
@@ -106,6 +55,22 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-   
+    public IEnumerator RollAfterJump(Animator playerAnimator)
+    {
+        if (playerAnimator != null)
+        {
+            playerAnimator.SetTrigger("Roll");
+
+            float animationLength = playerAnimator.GetCurrentAnimatorStateInfo(0).length;
+
+            yield return new WaitForSeconds(animationLength);
+            playerAnimator.ResetTrigger("Roll");
+            Debug.Log("Roll And Run");
+        }
+        else
+        {
+            Debug.LogError("Animator component is missing or not set!");
+        }
+    }
 }
 

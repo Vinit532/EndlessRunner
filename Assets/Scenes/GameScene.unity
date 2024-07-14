@@ -1811,7 +1811,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   jumpForce: 8
   playerControllerAnimator: {fileID: 933339680}
-  moveSpeed: 15
+  moveSpeed: 0
   maxMoveDistance: 3
   swipeObject: {fileID: 933339676}
   smoothTime: 0.005
@@ -1835,7 +1835,7 @@ AudioSource:
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
-  Mute: 0
+  Mute: 1
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 128

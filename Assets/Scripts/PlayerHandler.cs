@@ -242,13 +242,24 @@ public class PlayerHandler : MonoBehaviour
         gamePlayAudioSource.loop = false;
         action.Invoke();
     }
+
+    void RollAndRun()
+    {
+        playerControllerAnimator.ResetTrigger("Run");
+        // playerControllerAnimator.SetTrigger("Roll");
+        StartCoroutine(playerController.RollAfterJump(playerControllerAnimator));
+       // isGrounded = false;
+        
+    }
     // Check if the object is grounded
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
-            playerControllerAnimator.SetTrigger("Run");
+           // RollAndRun();
+            playerControllerAnimator.ResetTrigger("Falling");
+            playerControllerAnimator.SetTrigger("Roll");
             if (!gamePlayAudioSource.isPlaying)
             {
                 GamePlaySound(gamePlayAudioSource.Play);
@@ -273,7 +284,7 @@ public class PlayerHandler : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
 
-            Debug.Log("Player Out of ground");
+            Debug.Log("Player Out of ground : " + isGrounded);
         }
     }
 
