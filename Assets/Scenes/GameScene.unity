@@ -488,7 +488,7 @@ Terrain:
   m_StaticShadowCaster: 0
   m_IgnoreQualitySettings: 0
   m_ReflectionProbeUsage: 1
-  m_MaterialTemplate: {fileID: 2100000, guid: 5b0de8ed407fae54495f0b7c70b20ba0, type: 2}
+  m_MaterialTemplate: {fileID: 2100000, guid: 7b006783016558a4584eb658ec65ef35, type: 2}
   m_BakeLightProbesForTrees: 1
   m_PreserveTreePrototypeLayers: 0
   m_DeringLightProbesForTrees: 1
@@ -1811,7 +1811,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   jumpForce: 8
   playerControllerAnimator: {fileID: 933339680}
-  moveSpeed: 0
+  moveSpeed: 15
   maxMoveDistance: 3
   swipeObject: {fileID: 933339676}
   smoothTime: 0.005
@@ -1835,7 +1835,7 @@ AudioSource:
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
-  Mute: 1
+  Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 128
